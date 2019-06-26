@@ -1,4 +1,5 @@
 module UhkRough() {
+    // add the case
     basePoints = [
         [0, 0, 0], // 0
         [110, 0, 0], // 1
@@ -34,7 +35,13 @@ module UhkRough() {
     backSideE = [5, 6, 14, 13];
     faces = [ bottom, top, leftSide, rightSide, frontSide, backSideA, backSideB, backSideC, backSideD, backSideE];
     
-    polyhedron(points, faces);
+    union() {
+      polyhedron(points, faces);
+
+      // then add the keys
+      translate([11, 7, 20])
+        cube([95, 275, 10]);
+    }
 }
 
 UhkRough();
