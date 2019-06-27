@@ -1,50 +1,69 @@
 use <uhk-rough.scad>
-module UhkCover(depth = 2, margin = 0) {
+module UhkCover(depth = 2, margin = 0, extraSpaceDepth = 35) {
     outsideCoverBottomPoints = [
-        [-depth - margin, -depth - margin],
-        [110 + depth + margin, -depth - margin],
-        [128 + depth + margin, 102 + depth + margin],
-        [128 + depth + margin, 176 + depth + margin],
-        [110 + depth + margin, 285 + depth + margin],
-        [-depth - margin, 285+ depth + margin]
+        [-depth - margin, -depth - margin],           // 0
+        [110 + depth + margin, -depth - margin],      // 1
+        [128 + depth + margin, 102 + depth + margin], // 2
+        [128 + depth + margin, 176 + depth + margin], // 3
+        [110 + depth + margin, 285 + depth + margin], // 4
+        [-depth - margin, 285+ depth + margin]        // 5
     ];
 
-    baseCasePoints = [
-        [ -margin, -margin, 0], // 0
-        [ 110 + margin, -margin, 0 ], // 1
-        [ 128 + margin, 102 + margin, 0 ], // 2
-        [ 128 + margin, 176 + margin, 0 ], // 3
-        [ 110 + margin, 285 + margin, 0 ], // 4
-        [ -margin, 285 + margin, 0 ] // 5
+    extraSpacePointsA =
+        [ for (p = outsideCoverBottomPoints) if (p[0] != (-depth -margin)) p];
+    extraSpacePointsBtemp =
+        [ for (p = outsideCoverBottomPoints) if (p[0] != (- margin - depth)) [p[0] + extraSpaceDepth, p[1]] ];
+    extraSpacePointsB =
+        [ extraSpacePointsBtemp[3], extraSpacePointsBtemp[2], extraSpacePointsBtemp[1], extraSpacePointsBtemp[0]];
+
+    extraSpacePoints = concat(
+        extraSpacePointsA,
+        extraSpacePointsB
+    );
+
+    extraSpacePointsInside = [
+        [extraSpacePointsA[0].x + depth + margin, extraSpacePointsA[0].y + depth + margin],
+        [extraSpacePointsA[1].x + depth + margin, extraSpacePointsA[1].y],
+        [extraSpacePointsA[2].x + depth + margin, extraSpacePointsA[2].y],
+        [extraSpacePointsA[3].x + depth + margin, extraSpacePointsA[3].y - depth - margin],
+        [extraSpacePointsB[0].x - depth - margin, extraSpacePointsB[0].y - depth - margin],
+        [extraSpacePointsB[1].x - depth - margin, extraSpacePointsB[1].y],
+        [extraSpacePointsB[2].x - depth - margin, extraSpacePointsB[2].y],
+        [extraSpacePointsB[3].x - depth - margin, extraSpacePointsB[3].y + depth + margin],
     ];
+    echo(extraSpacePointsInside);
 
-    topCasePoints = [
-        [ -margin, -margin, 30 + margin], // 6
-        [ 110 + margin, -margin, 30 + margin ], // 7
-        [ 128 + margin, 102 + margin, 35 + margin ], // 8
-        [ 128 + margin, 176 + margin, 35 + margin ], // 9
-        [ 110 + margin, 285 + margin, 30 + margin ], // 10
-        [ -margin, 285 + margin, 30 + margin ] // 11
+    cableHolePoints = [
+      extraSpacePointsInside[2],
+      extraSpacePointsInside[3],
+      extraSpacePointsInside[4],
+      extraSpacePointsInside[5]
     ];
-    points = concat(baseCasePoints, topCasePoints);
-
-    caseBottom = [ 0, 1, 2, 3, 4, 5 ];
-    caseTop = [ 6, 7, 8 , 9, 10, 11 ];
-    leftSide = [ 0, 1, 7, 6 ];
-    rightSide = [ 4, 5, 11, 10 ];
-    frontSide = [ 0, 5, 11, 6];
-    backSideA = [ 1, 2, 8, 7 ];
-    backSideB = [ 2, 3, 9, 8 ];
-    backSideC = [ 3, 4, 10, 9 ];
-
+    echo(cableHolePoints);
     difference() {
-      color("#A5ACAF") linear_extrude(30 + depth + margin)
-          polygon(outsideCoverBottomPoints);
+      union() {
+          color("#A5ACAF") linear_extrude(30 + depth + margin)
+              polygon(outsideCoverBottomPoints);
+          color("#69BE28") linear_extrude(30 + depth + margin)
+              polygon(extraSpacePoints);
+      }
+      //make sure we dig low enough
       translate([0, 0, -10]) linear_extrude(15)
           polygon(basePoints());
+      //make sure we clear space for the keyboard itself
       UhkRough();
+      //clear space for the cable between the halves
       translate([100, 102 - margin, - 10])
           cube([138 - 110 + margin, 176 - 102 + 2 * margin, 40 + margin]);
+      //clear space for the USB-cable
+      translate([100, 172 + 70, - 10])
+          cube([extraSpaceDepth, 38 - 24, 15 + margin]);
+      //dig a hole to hide the cable in
+      translate([0, 0, depth + margin]) linear_extrude(30 - 2 * depth - 2 * margin)
+          polygon(extraSpacePointsInside);
+      //open it so we can put it in easily
+      translate([0, 0, -10]) linear_extrude(15)
+        polygon(cableHolePoints);
     }
 }
 
