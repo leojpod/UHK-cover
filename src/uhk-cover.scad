@@ -1,4 +1,5 @@
 use <uhk-rough.scad>
+use <../fonts/Hasklug Black Nerd Font Complete Mono.otf>
 module clipInShape(lenght, margin, depth) {
   rotate([0, 90, 90])
   color("#00FF00")
@@ -33,7 +34,7 @@ module clipOpenning(depth, margin) {
     cube([10, 10, 10]);
 }
 
-module UhkCover(depth = 2, margin = 0, extraSpaceDepth = 35) {
+module UhkCover(depth = 2, margin = 0, extraSpaceDepth = 35, name = "<|leojpod|>") {
     outsideCoverBottomPoints = [
         [-depth - margin, -depth - margin],           // 0
         [110 + depth + margin, -depth - margin],      // 1
@@ -129,6 +130,10 @@ module UhkCover(depth = 2, margin = 0, extraSpaceDepth = 35) {
         clipOpenning(depth, margin);
       translate([0, 175, 0])
         clipOpenning(depth, margin);
+      // add signature
+      translate([2 * depth + 2 * margin, 285/2 + depth + margin, 30 + depth + margin - .5])
+        rotate([0,0,-90])
+        linear_extrude(10) text(name, font="Hasklug Nerd Font:style=bold", halign="center",valign="bottom");
     }
 }
 UhkCover();
