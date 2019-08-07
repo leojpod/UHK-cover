@@ -16,3 +16,5 @@ There are many different things to validate and try before considering using thi
 So far, I've got a model that starts to look like something
 
 ![OpenSCAD rendering of the keyboard case](./uhk-cover.png)
+
+![OpenSCAD rendering of the keyboard case - view from under](./uhk-cover-from-under.png)
