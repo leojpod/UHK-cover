@@ -138,5 +138,5 @@ module UhkCover(depth = 2, margin = 0, extraSpaceDepth = 35, name = "<|leojpod|>
 }
 UhkCover();
 
-translate([200, 0, 0])
-  UhkCover(4, 2);
+//translate([200, 0, 0])
+//  UhkCover(4, 2);

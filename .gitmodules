@@ -1,0 +1,3 @@
+[submodule "BOSL"]
+	path = BOSL
+	url = git@github.com:revarbat/BOSL.git
