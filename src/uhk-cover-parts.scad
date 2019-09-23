@@ -78,6 +78,33 @@ module topPiece (depth = 2, margin = 2, extraSpaceDepth = 30, name = "<| leojpod
   }
 }
 
+module medallion (depth = 2, margin = 2, extraSpaceDepth = 30) {
+  totalWidth = 2 * margin + 2 * depth + 285;
+  halfWidth = totalWidth / 2;
+  totalHeight = 2 * margin + 2 * depth + 128 + extraSpaceDepth;
+  halfHeight = totalHeight / 2;
+  difference () {
+    translate ([halfHeight, halfWidth, 30 + depth + margin]) {
+      cylinder(depth, r1 = halfHeight * .75, r2= halfHeight * .70);
+    }
+    translate([halfHeight, halfWidth, 0]) {
+      rotate([0,0,5]) {
+        translate([0, halfHeight * .6, 0]) {
+          cylinder(200, r = 2.5);
+        }
+        rotate ([0, 0, 120])
+        translate([0, halfHeight * .6, 0]) {
+          cylinder(200, r = 2.5);
+        }
+        rotate([0, 0, -120])
+        translate([0, halfHeight * .6, 0]) {
+          cylinder(200, r = 2.5);
+        }
+      }
+    }
+  }
+}
+
 mirror ([0,0,1]) {
 
   rightSide();
@@ -87,6 +114,9 @@ mirror ([0,0,1]) {
 
   translate([200, -200,0])
     topPiece();
+
+  translate([100, -100, 0])
+    medallion();
 }
 
 
