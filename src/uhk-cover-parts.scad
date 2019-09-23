@@ -40,13 +40,16 @@ module topPiece (depth = 2, margin = 2, extraSpaceDepth = 30, name = "<| leojpod
 }
 
 
-rightSide();
 
-translate([0, -200,0])
-  leftSide();
+mirror ([0,0,1]) {
 
-translate([200, -200,0])
-  topPiece();
+  rightSide();
 
+  translate([0, -200,0])
+    leftSide();
+
+  translate([200, -200,0])
+    topPiece();
+}
 
 
