@@ -1,6 +1,8 @@
 use <uhk-cover.scad>
+include <../BOSL/constants.scad>
+use <../BOSL/joiners.scad>
 
-module rightSide(depth = 2, margin = 0, extraSpaceDepth = 30, name = "<| leojpod |>") {
+module rawRightSide(depth = 2, margin = 0, extraSpaceDepth = 30, name = "<| leojpod |>") {
   difference() {
     UhkCover(depth, margin, extraSpaceDepth, name);
     // now cut some stuff out
@@ -13,12 +15,12 @@ module rightSide(depth = 2, margin = 0, extraSpaceDepth = 30, name = "<| leojpod
   }
 }
 
-module leftSide(depth = 2, margin = 0, extraSpaceDepth = 30, name = "<| leojpod |>") {
+module rawLeftSide(depth = 2, margin = 0, extraSpaceDepth = 30, name = "<| leojpod |>") {
   difference() {
     UhkCover(depth, margin, extraSpaceDepth, name);
     translate([-20 , depth + margin + 176,-20])
       cube([200,200,200]);
-    rightSide(depth, margin, extraSpaceDepth, name);
+    rawRightSide(depth, margin, extraSpaceDepth, name);
     // now cut the top
     translate([60, depth + margin + 110, -10 -depth - margin])
       cube([200, 20, 10+ 15 + margin + depth ]);
@@ -28,18 +30,53 @@ module leftSide(depth = 2, margin = 0, extraSpaceDepth = 30, name = "<| leojpod 
 }
 
 
-module topPiece (depth = 2, margin = 2, extraSpaceDepth = 30, name = "<| leojpod |>") {
+module rawTopPiece (depth = 2, margin = 2, extraSpaceDepth = 30, name = "<| leojpod |>") {
   difference() {
     UhkCover(depth, margin, extraSpaceDepth, name);
     translate([-20 , depth + margin + 176,-20])
       cube([200,200,200]);
     translate([-20 - depth - margin , -20 ,-20])
       cube([20 + depth + margin + 90,200,200]);
-    leftSide(depth, margin, extraSpaceDepth, name);
+    rawLeftSide(depth, margin, extraSpaceDepth, name);
   }
 }
 
+module rightSide (depth = 2, margin = 2, extraSpaceDepth = 30, name = "<| leojpod |>") {
+  union () {
+    difference() {
+      rawRightSide(depth, margin, extraSpaceDepth, name);
+      // take away some of the matter to place the joiners
+      translate([0, 125, 15 ])
+        half_joiner_clear(orient=ORIENT_Y);
+      translate([128 + depth + margin, margin + depth + 176, 15 ])
+        half_joiner_clear(orient=ORIENT_Y);
+      translate([extraSpaceDepth + 128 + depth + margin, margin + depth + 176, 15 ])
+        half_joiner_clear(orient=ORIENT_Y);
+    }
+    translate([-margin, 125, 15 ])
+      half_joiner(w=depth + margin, guides=true, orient=-ORIENT_Y);
+    translate([128 + depth , margin + depth + 176, 15])
+      half_joiner2(w = depth * 2 + margin, guides = true, orient=-ORIENT_Y);
+    translate([extraSpaceDepth + 128 + depth, margin + depth + 176, 15])
+      half_joiner2(w = depth + margin, guides = true, orient=-ORIENT_Y);
+  }
+}
 
+module leftSide (depth = 2, margin = 2, extraSpaceDepth = 30, name = "<| leojpod |>") {
+  union () {
+    difference () {
+      rawLeftSide(depth, margin, extraSpaceDepth, name);
+    }
+  }
+}
+
+module topPiece (depth = 2, margin = 2, extraSpaceDepth = 30, name = "<| leojpod |>") {
+  union () {
+    difference () {
+      rawTopPiece(depth, margin, extraSpaceDepth, name);
+    }
+  }
+}
 
 mirror ([0,0,1]) {
 
