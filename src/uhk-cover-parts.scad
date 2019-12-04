@@ -200,9 +200,15 @@ module cover_joiner_2 (position = [ 0, 0, 0 ], rotation = [ 0, 0, 0 ], width = 6
   }
 }
 
-module screw (headSize = 8, headHeigh = 1, screw_size = 5, screw_length = 5) {
+module screw (headSize = 8, headHeigh = 1, screw_size = 5, screw_length = 5, with_dig = false) {
   union() {
-    cylinder(h= headHeigh, r = headSize / 2, center = false, $fn = 6);
+    if (with_dig) {
+      cylinder(h= headHeigh/2, r1 = headSize / 2, r2 = headSize/2 * 0.875, center = false, $fn = 8);
+      translate([0,0, headHeigh/2])
+        cylinder(h= headHeigh/2, r2 = headSize / 2, r1 = headSize/2 * 0.875, center = false, $fn = 8);
+    } else {
+      cylinder(h= headHeigh, r = headSize / 2, center = false, $fn = 8);
+    }
     translate([0, 0, headHeigh])
       cylinder(h = screw_length, r = screw_size / 2, center = false, $fn = 10);
   }
@@ -222,9 +228,9 @@ mirror ([0,0,1]) {
     medallion();
 }
 
-translate([-10, 0, 0]) {
-  screw(screw_length = 2);
-  translate ([0, 10, 0]) screw(screw_length = 4);
-  translate ([0, 20, 0]) screw(screw_length = 6);
+translate([-20, 0, 0]) {
+  screw(screw_length = 4);
+  translate([10, 0, 0]) screw(with_dig = true, headHeigh = 3, screw_length = 4);
+  translate ([0, 10, 0]) screw(screw_length = 6);
 }
 
