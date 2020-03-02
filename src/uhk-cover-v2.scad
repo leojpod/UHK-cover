@@ -1,38 +1,5 @@
 use <uhk-rough.scad>
 use <../fonts/Hasklug Black Nerd Font Complete Mono.otf>
-module clipInShape(lenght, margin, depth) {
-  rotate([0, 90, 90])
-  color("#00FF00")
-  translate([-(margin + depth), 0,  0])
-  linear_extrude(lenght) polygon([
-    [0,0],
-    [depth + margin, depth + margin],
-    [0, depth + margin]
-  ]);
-}
-
-module clipOpenner(depth) {
-  translate([-depth + .1, 5, 30/2])
-    rotate([90, 0, 0])
-    difference() {
-      cylinder(10, 5, 5, true);
-      translate([depth-.1, -50, -50])
-      cube([100, 100, 100]);
-    }
-  translate([-depth - 5, 0, 0])
-    cube([5, 10, depth]);
-  translate([- 2 * depth - 5, 0, 0])
-    cube([depth, 10, 30]);
-}
-
-module clipOpenning(depth, margin) {
-  translate([-10, -2, -5])
-    cube([20, 2, 15]);
-  translate([-10, 10, -5])
-    cube([20, 2, 15]);
-  translate([-depth + 1.5, 0, depth + margin])
-    cube([10, 10, 10]);
-}
 
 module UhkCover(depth = 2, margin = 0, extraSpaceDepth = 35, name = "<|leojpod|>") {
     outsideCoverBottomPoints = [
@@ -75,55 +42,57 @@ module UhkCover(depth = 2, margin = 0, extraSpaceDepth = 35, name = "<|leojpod|>
       extraSpacePointsInside[5]
     ];
 
-    difference() {
-      union() {
-        difference() {
-          union() {
-              color("#A5ACAF") linear_extrude(30 + depth + margin)
-                  polygon(outsideCoverBottomPoints);
-              color("#69BE28") linear_extrude(30 + depth + margin)
-                  polygon(extraSpacePoints);
+    translate([depth + margin, depth + margin, -3 * depth])
+      difference() {
+        mirror ([0,0,1])
+        union() {
+          difference() {
+            union() {
+                color("#A5ACAF") linear_extrude(30 + depth + margin)
+                    polygon(outsideCoverBottomPoints);
+                color("#69BE28") linear_extrude(30 + depth + margin)
+                    polygon(extraSpacePoints);
+            }
+            //make sure we dig low enough
+            translate([0, 0, -10]) linear_extrude(15)
+                polygon(basePoints());
+            //make sure we clear space for the keyboard itself
+            UhkRough();
+            //clear space for the cable between the halves
+            translate([100, 102 - margin, - 10])
+                cube([138 - 110 + margin, 176 - 102 + 2 * margin, 40 + margin]);
+            //clear space for the USB-cable
+            translate([100, 172 + 70, - 1 - margin])
+                cube([extraSpaceDepth, 38 - 24, 25 + margin]);
+            //dig a hole to hide the cable in
+            translate([0, 0, 30])
+                mirror([0, 0, 1])
+                linear_extrude(40)
+                polygon(extraSpacePointsInside);
+            //open it so we can put it in easily
+            translate([0, 0, -10]) linear_extrude(15)
+                polygon(cableHolePoints);
+            //make 2 small indents to be able to lift the screen on it
+            translate([depth - margin, - depth - margin, 30]) rotate([0, -60, 0])
+                cube([10, 285 + 2 * depth + 2 * margin, 10]);
+            translate([128 + extraSpaceDepth - depth + margin, - depth - margin, 30]) rotate([0, -30, 0])
+                cube([10, 285 + 2 * depth + 2 * margin, 10]);
           }
-          //make sure we dig low enough
-          translate([0, 0, -10]) linear_extrude(15)
-              polygon(basePoints());
-          //make sure we clear space for the keyboard itself
-          UhkRough();
-          //clear space for the cable between the halves
-          translate([100, 102 - margin, - 10])
-              cube([138 - 110 + margin, 176 - 102 + 2 * margin, 40 + margin]);
-          //clear space for the USB-cable
-          translate([100, 172 + 70, - 1 - margin])
-              cube([extraSpaceDepth, 38 - 24, 15 + margin]);
-          //dig a hole to hide the cable in
-          translate([0, 0, depth + margin])
-              mirror([0, 0, 1])
-              linear_extrude(40)
-              polygon(extraSpacePointsInside);
-          //open it so we can put it in easily
-          translate([0, 0, -10]) linear_extrude(15)
-              polygon(cableHolePoints);
-          //make 2 small indents to be able to lift the screen on it
-          translate([depth - margin, - depth - margin, 30]) rotate([0, -60, 0])
-              cube([10, 285 + 2 * depth + 2 * margin, 10]);
-          translate([128 + extraSpaceDepth - depth + margin, - depth - margin, 30]) rotate([0, -30, 0])
-              cube([10, 285 + 2 * depth + 2 * margin, 10]);
+          // close the stuff
+          translate([0, 0, -3*depth])
+              linear_extrude(3*depth)
+              polygon(outsideCoverBottomPoints);
+          translate([0, 0, -3*depth])
+              linear_extrude(3*depth)
+              polygon(extraSpacePoints);
         }
-        // close the stuff
-        translate([0, 0, -3*depth])
-            linear_extrude(3*depth)
-            polygon(outsideCoverBottomPoints);
-        translate([0, 0, -3*depth])
-            linear_extrude(3*depth)
-            polygon(extraSpacePoints);
+        // add signature
+        translate([2 * depth + 2 * margin, 285/2 + depth + margin, 30 + depth + margin - .5])
+          rotate([0,0,-90])
+          linear_extrude(10) text(name, font="Hasklug Nerd Font:style=bold", halign="center",valign="bottom");
       }
-      // add signature
-      translate([2 * depth + 2 * margin, 285/2 + depth + margin, 30 + depth + margin - .5])
-        rotate([0,0,-90])
-        linear_extrude(10) text(name, font="Hasklug Nerd Font:style=bold", halign="center",valign="bottom");
-    }
 }
 UhkCover();
 
-//translate([200, 0, 0])
-//  UhkCover(4, 2);
+translate([200, 0, 0])
+  UhkCover(4, 2);
