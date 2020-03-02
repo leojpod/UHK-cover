@@ -1,30 +1,32 @@
 use <uhk-rough.scad>
 use <../fonts/Hasklug Black Nerd Font Complete Mono.otf>
 
-module UhkCover(depth = 2, margin = 0, extraSpaceDepth = 35, name = "<|leojpod|>") {
-    outsideCoverBottomPoints = [
-        [-depth - margin, -depth - margin],           // 0
-        [110 + depth + margin, -depth - margin],      // 1
-        [128 + depth + margin, 102 + depth + margin], // 2
-        [128 + depth + margin, 176 + depth + margin], // 3
-        [110 + depth + margin, 285 + depth + margin], // 4
-        [-depth - margin, 285+ depth + margin]        // 5
-    ];
+function outside_cover_bottom_points(depth = 2, margin = 0)
+  = [[-depth - margin, -depth - margin],           // 0
+      [110 + depth + margin, -depth - margin],      // 1
+      [128 + depth + margin, 102 + depth + margin], // 2
+      [128 + depth + margin, 176 + depth + margin], // 3
+      [110 + depth + margin, 285 + depth + margin], // 4
+      [-depth - margin, 285+ depth + margin]        // 5
+  ];
 
-    extraSpacePointsA =
-        [ for (p = outsideCoverBottomPoints) if (p[0] != (-depth -margin)) p];
-    extraSpacePointsBtemp =
-        [ for (p = outsideCoverBottomPoints) if (p[0] != (- margin - depth)) [p[0] + extraSpaceDepth, p[1]] ];
+function extra_space_points(depth = 2, margin = 0, extraSpaceDepth = 35)  =
+  let(extraSpacePointsA =
+        [ for (p = outside_cover_bottom_points(depth, margin)) if (p[0] != (-depth -margin)) p],
+      extraSpacePointsBtemp =
+        [ for (p = outside_cover_bottom_points(depth, margin)) if (p[0] != (- margin - depth)) [p[0] + extraSpaceDepth, p[1]] ],
     extraSpacePointsB =
-        [ extraSpacePointsBtemp[3], extraSpacePointsBtemp[2], extraSpacePointsBtemp[1], extraSpacePointsBtemp[0]];
+        [ extraSpacePointsBtemp[3], extraSpacePointsBtemp[2], extraSpacePointsBtemp[1], extraSpacePointsBtemp[0]])
+  concat(extraSpacePointsA, extraSpacePointsB);
 
-    extraSpacePoints = concat(
-        extraSpacePointsA,
-        extraSpacePointsB
-    );
-
-    extraSpacePointsInside = [
-        [extraSpacePointsA[0].x + depth + margin, extraSpacePointsA[0].y + depth + margin],
+function extra_space_points_inside(depth = 2, margin = 0, extraSpaceDepth = 35)  =
+  let(extraSpacePointsA =
+        [ for (p = outside_cover_bottom_points(depth, margin)) if (p[0] != (-depth -margin)) p],
+      extraSpacePointsBtemp =
+        [ for (p = outside_cover_bottom_points(depth, margin)) if (p[0] != (- margin - depth)) [p[0] + extraSpaceDepth, p[1]] ],
+    extraSpacePointsB =
+        [ extraSpacePointsBtemp[3], extraSpacePointsBtemp[2], extraSpacePointsBtemp[1], extraSpacePointsBtemp[0]])
+    [ [extraSpacePointsA[0].x + depth + margin, extraSpacePointsA[0].y + depth + margin],
         [extraSpacePointsA[1].x + depth + margin, extraSpacePointsA[1].y],
         [extraSpacePointsA[2].x + depth + margin, extraSpacePointsA[2].y],
         [extraSpacePointsA[3].x + depth + margin, extraSpacePointsA[3].y - depth - margin],
@@ -33,14 +35,14 @@ module UhkCover(depth = 2, margin = 0, extraSpaceDepth = 35, name = "<|leojpod|>
         [extraSpacePointsB[2].x - depth - margin, extraSpacePointsB[2].y],
         [extraSpacePointsB[3].x - depth - margin, extraSpacePointsB[3].y + depth + margin],
     ];
-    echo(extraSpacePointsInside);
 
-    cableHolePoints = [
-      extraSpacePointsInside[2],
-      extraSpacePointsInside[3],
-      extraSpacePointsInside[4],
-      extraSpacePointsInside[5]
-    ];
+
+module UhkCover(depth = 2, margin = 0, extraSpaceDepth = 35, name = "<|leojpod|>") {
+    outsideCoverBottomPoints = outside_cover_bottom_points(depth, margin);
+
+    extraSpacePoints = extra_space_points(depth, margin, extraSpaceDepth);
+
+    extraSpacePointsInside = extra_space_points_inside(depth, margin, extraSpaceDepth);
 
     translate([depth + margin, depth + margin, -3 * depth])
       difference() {
@@ -69,9 +71,6 @@ module UhkCover(depth = 2, margin = 0, extraSpaceDepth = 35, name = "<|leojpod|>
                 mirror([0, 0, 1])
                 linear_extrude(40)
                 polygon(extraSpacePointsInside);
-            //open it so we can put it in easily
-            translate([0, 0, -10]) linear_extrude(15)
-                polygon(cableHolePoints);
             //make 2 small indents to be able to lift the screen on it
             translate([depth - margin, - depth - margin, 30]) rotate([0, -60, 0])
                 cube([10, 285 + 2 * depth + 2 * margin, 10]);
