@@ -86,8 +86,8 @@ module UhkCover(depth = 2, margin = 0, extraSpaceDepth = 35, name = "<|leojpod|>
               polygon(extraSpacePoints);
         }
         // add signature
-        translate([2 * depth + 2 * margin, 285/2 + depth + margin, 30 + depth + margin - .5])
-          rotate([0,0,-90])
+        translate([2 * depth + 2 * margin, 285/2 + depth + margin, - 34 + depth + margin - .5])
+          rotate([180,0,90])
           linear_extrude(10) text(name, font="Hasklug Nerd Font:style=bold", halign="center",valign="bottom");
       }
 }
