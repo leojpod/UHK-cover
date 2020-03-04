@@ -433,12 +433,14 @@ translate ([0, 100, 0])
 
 /* laptopRest();  */
 
-rightSide();
-
-translate([300, 0, 0])
+translate([300, -100, 0])
   leftSide();
 
-translate([300, 100, 0]) medallion();
+translate([300, 100, 0])
+  rightSide();
+
+translate([300, 100, 0])
+  medallion();
 
 translate([-20, 0, 0]) {
   screw(screw_length = 4);
